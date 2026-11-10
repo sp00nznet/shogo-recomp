@@ -1,0 +1,17 @@
+{
+  "title": "Shogo: Mobile Armor Division",
+  "repo": "sp00nznet/shogo-recomp",
+  "accent": "#c8402a",
+  "note": {
+    "windows": "Point it at your installed copy of Shogo with the 2.2 patch applied (the folder holding Client.exe and SHOGOP3.REZ). The build takes about 15 minutes and 3 GB. Python and the Visual Studio Build Tools are installed if they are missing; the Build Tools are about 3 GB and add 15 to 30 minutes, and Windows asks for permission once."
+  },
+  "game": {
+    "name": "Shogo: Mobile Armor Division 2.2",
+    "files": ["Client.exe", "SHOGOP3.REZ"]
+  },
+  "sources": [{ "repo": "sp00nznet/pcrecomp", "ref": "pcrecomp-lithtech", "dir": "pcrecomp" }],
+  "setup": {
+    "windows": ["cmd", "/c", "Setup.cmd", "-Yes", "-GameDir", "{game}"]
+  },
+  "play": "Shogo.*"
+}
