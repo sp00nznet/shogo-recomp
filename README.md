@@ -52,7 +52,7 @@ gitignored `src/recomp/gen/`.
 | Setup.cmd, launcher | written; tested only up to the game-folder question (no game data on the test machine) |
 | Conformance harness | none yet; the dry run (`build\shogo.exe`, no `--run`) is the only automatic check ([ROADMAP.md](ROADMAP.md)) |
 | Headless mode (`--headless --record`) | not yet |
-| netlab | recipe `shogo-recomp`; builds on the farm, no QA step |
+| netlab | recipe `shogo-recomp`, no QA step. The first farm build (clang-cl) stalled on its last three generated chunks after 45 minutes and was stopped; the local MSVC build (`build.cmd`) is the one that works |
 
 ## Screenshots
 

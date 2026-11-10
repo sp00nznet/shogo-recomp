@@ -11,6 +11,7 @@
   (`build\shogo.exe` without `--run`) is the only automatic check.
 - **Headless mode** (section 10): `--headless --record out.mp4`, an offscreen
   window piped to ffmpeg, so runs work over RDP and on the test VMs.
+- **Finish a farm build**: the first `netlab build shogo-recomp` stalled on the last three generated chunks under clang-cl; find out why (chunk size, memory) and fix it in netlab or the chunking.
 - **pcrecomp-lithtech into pcrecomp main**, then point Setup, the launcher and
   the netlab recipe at `main`.
 
