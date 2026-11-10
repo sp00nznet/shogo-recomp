@@ -188,7 +188,7 @@ if ((Test-Path 'src\recomp\gen\recomp_dispatch.c') -and -not $Force) { Say "  Li
 else { Run "Lifting" ($pyargs + @('run_lift.py')) }
 if ((Test-Path 'build\shogo.exe') -and -not $Force) { Say "  Already built (skipping)." }
 else {
-  $env:CMAKE_ARGS = "-DPCRECOMP=$($Toolkit -replace '\', '/')"
+  $env:CMAKE_ARGS = "-DPCRECOMP=$($Toolkit -replace '\\', '/')"
   Run "Compiling" @('cmd', '/d', '/c', "`"$Root\build.cmd`"")
 }
 
