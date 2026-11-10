@@ -364,12 +364,12 @@ static void shot(const char* file) {
 void sub_10116A50(void);
 static volatile LONG g_shot_due = -1;
 /* D3DDP_DONOTCLIP off. d3d.ren asks Direct3D not to clip most of what it
- * draws (it clips itself, and 1998's hardware had a guard band). Direct3D's
- * RGB software rasteriser, the only device this host has, writes a triangle
- * that reaches past the surface straight into the heap: the runs died with
- * heap corruption inside DrawIndexedPrimitive. So the device's
- * DrawPrimitive and DrawIndexedPrimitive go through these, which clear the
- * flag, by giving the device object a copy of its vtable. */
+ * draws (it clips itself, and 1998's hardware had a guard band). The RGB
+ * rasteriser's span code then reads and writes past the surface for a
+ * triangle that reaches outside it (wild reads and heap corruption inside
+ * DrawIndexedPrimitive). So the device's DrawPrimitive and
+ * DrawIndexedPrimitive go through these, which clear the flag, by giving
+ * the device object a copy of its vtable. */
 #define D3D_DEVICE3 0x101461F8u
 #define D3DDP_DONOTCLIP 4u
 typedef HRESULT (WINAPI *dp_t)(void*, DWORD, DWORD, void*, DWORD, DWORD);
@@ -386,13 +386,12 @@ static HRESULT WINAPI clip_dip(void* d, DWORD t, DWORD fvf, void* v, DWORD n, WO
 static void clip_device(void) {
     void*** dev = (void***)(uintptr_t)MEM32(D3D_DEVICE3);
     if (!dev || *dev == g_dev_vt) return;
-    memcpy(g_dev_vt, *dev, sizeof g_dev_vt);   /* IDirect3DDevice3 has 42 methods */
+    memcpy(g_dev_vt, *dev, sizeof g_dev_vt);   /* IDirect3DDevice3: 42 methods */
     g_real_dp = (dp_t)g_dev_vt[28];             /* 0x70 */
     g_real_dip = (dip_t)g_dev_vt[29];           /* 0x74 */
     g_dev_vt[28] = (void*)clip_dp;
     g_dev_vt[29] = (void*)clip_dip;
     *dev = g_dev_vt;
-    printf("[d3d] device %p: DrawPrimitive clips\n", (void*)dev);
 }
 
 static void hook_present(void) {
@@ -476,6 +475,27 @@ static DWORD WINAPI trace_window(LPVOID unused) {
     Sleep(1000);
     native32_trace_native = 0;
     return 0;
+}
+
+/* Code Windows' own DLLs build in heap memory and run: Direct3D's RGB
+ * rasteriser (d3dim700) jumps into HeapAlloc'd span code, which a 1998
+ * process could execute and this /NXCOMPAT host cannot. An execute fault in
+ * read-write private memory outside the guest makes that region executable
+ * (the UT99 recomp does the same for Galaxy's mixers).
+ * ponytail: per title; a native32 option once a third title needs it. */
+static LONG CALLBACK heap_code(EXCEPTION_POINTERS* ep) {
+    EXCEPTION_RECORD* r = ep->ExceptionRecord;
+    MEMORY_BASIC_INFORMATION mbi;
+    DWORD old;
+    if (r->ExceptionCode != EXCEPTION_ACCESS_VIOLATION || r->NumberParameters < 2 ||
+        r->ExceptionInformation[0] != 8)
+        return EXCEPTION_CONTINUE_SEARCH;
+    void* at = (void*)r->ExceptionInformation[1];
+    if (native32_in_guest((uint32_t)(uintptr_t)at) || !VirtualQuery(at, &mbi, sizeof mbi) ||
+        mbi.Type != MEM_PRIVATE || mbi.State != MEM_COMMIT || mbi.Protect != PAGE_READWRITE ||
+        !VirtualProtect(mbi.BaseAddress, mbi.RegionSize, PAGE_EXECUTE_READWRITE, &old))
+        return EXCEPTION_CONTINUE_SEARCH;
+    return EXCEPTION_CONTINUE_EXECUTION;
 }
 
 static DWORD WINAPI watchdog(LPVOID unused) {
@@ -575,6 +595,7 @@ int main(int argc, char** argv) {
         FARPROC up = mss ? GetProcAddress(mss, "_AIL_startup@0") : NULL;
         if (up) ((void (WINAPI*)(void))up)();
     }
+    AddVectoredExceptionHandler(1, heap_code);
     AddVectoredExceptionHandler(0, crash);
     printf("Shogo recomp host\n  lifted functions in dispatch: %u\n", recomp_dispatch_count);
 

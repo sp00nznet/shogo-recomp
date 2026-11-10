@@ -61,10 +61,18 @@ the desktop's 32-bit format and the renderers only draw 16-bit. The host
 re-runs itself under Windows' `16BITCOLOR` compatibility layer (reduced color
 mode), which gives DirectDraw a 16-bit primary.
 
-`d3d.ren` passes `D3DDP_DONOTCLIP` to most `DrawPrimitive` calls; the RGB
-rasteriser then writes triangles that reach past the surface into the heap
-(heap corruption inside `DrawIndexedPrimitive`). The host gives the device a
-copy of its vtable whose two draw calls clear that flag.
+The runs then died at random inside Direct3D (from `d3d.ren`'s model
+drawing): an execute fault in heap memory, sometimes heap corruption first.
+Direct3D's RGB rasteriser (`d3dim700.dll`) builds span code in memory it got
+from the heap and jumps to it; a 1998 process could run that, this
+`/NXCOMPAT` host cannot (the bridge needs DEP for its callbacks). The host
+makes such a region executable on its first fetch, as the UT99 recomp does
+for Galaxy's mixers. Even then the span code sometimes read or wrote wild: `d3d.ren` passes
+`D3DDP_DONOTCLIP` to most of its `DrawPrimitive` calls (it clips itself, and
+the hardware of the day had a guard band), and the RGB rasteriser has none.
+The host gives the device a copy of its vtable whose `DrawPrimitive` and
+`DrawIndexedPrimitive` clear that flag. With both, a run plays the menus into
+the first mission.
 
 ## 5. Miles
 
@@ -79,7 +87,15 @@ is never in front, so `--key` presses never arrived (the title screen waits
 for a key). `tools/rebase.py` patches the two `SetCooperativeLevel` flag
 pushes in `Client.exe` to `DISCL_BACKGROUND | DISCL_NONEXCLUSIVE`.
 
-## 7. Screenshots
+## 7. Menu keys
+
+The title screen's "any key" is read from DirectInput, but the menus read
+`WM_KEYDOWN`, which a window that is not in front never gets. `--key` sends
+both: `SendInput` for DirectInput and a posted `WM_KEYDOWN`/`WM_KEYUP` to the
+game window. Space, then Enter five times (single player, new game, normal,
+past the two intro captions), then Space past the briefing is the mission.
+
+## 8. Screenshots
 
 A GDI copy of the screen is black. `--shot` locks `d3d.ren`'s back buffer,
 right after the renderer's present (which the engine calls through the

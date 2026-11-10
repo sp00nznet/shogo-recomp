@@ -36,19 +36,24 @@ timestamp matches the file named.
 and the lifted C is generated on your machine. Nothing from the game is in this
 repository.
 
-## Status: early. It boots through the lifted engine, game code and renderer to the main menu's backdrop.
+## Status: early. A new game plays into the first mission, Ambush, in the recompiled code.
 
 | | |
 |---|---|
 | Version recompiled | Shogo 2.2 (`Client.exe` stamp `0x36DFF481`, March 1999), from the US CD + `shogo_2214_full.zip` |
 | Lift | 8 modules, 14,567 functions, 0 errors |
 | Boot: rez files, the game DLLs out of `SHOGOP3.REZ`, DllMains | ✅ |
-| Renderer: `d3d.ren` on Direct3D (DX6), windowed | ✅ on the RGB software rasteriser (`+RGBRast 1`); this machine has no Direct3D HAL for DirectDraw surfaces, so the hardware path is untested |
-| Main menu | the animated backdrop (the 3D "warble" and the logo) draws, about 13 frames a second; the menu items do not show yet |
-| Input | DirectInput, polled; the test harness cannot yet bring the window to the front, so keys have not been seen to arrive |
-| First mission | not yet |
+| Renderer: `d3d.ren` on Direct3D (DX6), windowed | ✅ on Direct3D's RGB software rasteriser (`+RGBRast 1`), about 13 frames a second. This machine has no Direct3D HAL for DirectDraw surfaces, so the hardware path is untested |
+| Title, main menu, new game, difficulty | ✅ driven by `--key` |
+| First mission (`01_Ambush`) | ✅ loads; the briefing, then in the mech with the HUD, squadmates and radio chatter |
+| Playing it (moving, firing) | not tried yet |
 | Sound | Miles (`mss32.dll`); runs are muted (`+soundenable 0`) |
-| Known crash | a fault inside Direct3D's software rasteriser, called from `d3d.ren`, in some runs (see [docs/bringup.md](docs/bringup.md)) |
+| Setup script, launcher, netlab | not yet |
+
+| | |
+|---|---|
+| ![New game](docs/screenshots/game-menu.png) | ![Difficulty](docs/screenshots/difficulty.png) |
+| ![The briefing](docs/screenshots/briefing.png) | ![Ambush](docs/screenshots/ambush.png) |
 
 ## Getting started
 
@@ -69,6 +74,12 @@ until it is merged).
    ```
 3. Build: `build.cmd`.
 4. Run: `build\shogo.exe --run -- +windowed 1 +RGBRast 1 +soundenable 0`.
+   The scripted path into the first mission (`--shot` writes the frames):
+   ```
+   build\shogo.exe --run --key 0x20@25 --key 0x0D@35 --key 0x0D@45 --key 0x0D@55
+       --key 0x0D@65 --key 0x0D@80 --key 0x20@115 --shot 130 ambush.bmp
+       -- +windowed 1 +RGBRast 1 +soundenable 0
+   ```
 
 Everything after `--` goes to the engine as console variables. Host options:
 `--watchdog S`, `--shot S FILE.bmp` (the renderer's back buffer, more than one
