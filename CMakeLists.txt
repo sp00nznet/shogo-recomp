@@ -20,18 +20,15 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(PCRECOMP "${CMAKE_SOURCE_DIR}/../pcrecomp" CACHE PATH "pcrecomp checkout")
-file(GLOB_RECURSE GEN_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/recomp/gen/*.c")
-if(NOT GEN_SOURCES)
-  message(FATAL_ERROR "src/recomp/gen is empty -- run `py -3 run_lift.py` first")
-endif()
+include(${PCRECOMP}/cmake/pcrecomp_gen.cmake)   # needs pcrecomp with cmake/ (pcrecomp-hostfixes)
 
 add_executable(shogo
   src/runtime/host.c
   ${PCRECOMP}/runtime/native32/native32.c
   ${PCRECOMP}/runtime/recomp32/image_loader.c
   ${PCRECOMP}/runtime/recomp32/recomp_trace.c
-  ${GEN_SOURCES}
 )
+pcrecomp_gen_sources(shogo)   # /Od; -DPCRECOMP_GEN_OPT=ON for the build type's /O2
 target_include_directories(shogo PRIVATE
   src/runtime src/recomp/gen ${PCRECOMP}/runtime/native32 ${PCRECOMP}/runtime/recomp32)
 target_compile_definitions(shogo PRIVATE RECOMP_RETADDR=0u _CRT_SECURE_NO_WARNINGS
@@ -42,8 +39,6 @@ target_compile_definitions(shogo PRIVATE RECOMP_RETADDR=0u _CRT_SECURE_NO_WARNIN
 target_link_options(shogo PRIVATE /BASE:0x60000000 /FIXED:NO /DYNAMICBASE:NO
                                  /NXCOMPAT /LARGEADDRESSAWARE /STACK:0x1000000
                                  /MANIFESTUAC:NO)
-set(GEN_OPT "/O2" CACHE STRING "optimisation for the generated C")
-set_source_files_properties(${GEN_SOURCES} PROPERTIES COMPILE_OPTIONS "/w;${GEN_OPT}")
 set_source_files_properties(src/runtime/host.c PROPERTIES COMPILE_OPTIONS "/W3")
 target_link_libraries(shogo PRIVATE user32 gdi32 kernel32 winmm)
 
