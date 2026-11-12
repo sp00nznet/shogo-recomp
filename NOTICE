@@ -1,9 +1,0 @@
-Shogo: Mobile Armor Division recomp
-
-The host's module loader is derived from the Unreal Tournament recomp
-(https://github.com/sp00nznet/ut99-recomp), the layout from the Crazy Taxi
-recomp, and it runs on pcrecomp's native32 runtime
-(https://github.com/sp00nznet/pcrecomp), all MIT.
-
-Shogo: Mobile Armor Division and LithTech are (c) Monolith Productions. No
-part of the game is included.

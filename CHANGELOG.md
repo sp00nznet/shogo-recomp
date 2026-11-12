@@ -6,7 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- The build configures against `pcrecomp-lithtech` again: the generated C was
+  added through pcrecomp-hostfixes' `cmake/pcrecomp_gen.cmake`, which that
+  branch lacks; without it `CMakeLists.txt` adds the files itself, at `/Od`.
+
+### Changed
+- The generated C is compiled at `/Od` (`-DPCRECOMP_GEN_OPT=ON` for `/O2`):
+  minutes instead of about 25 more.
+- README in the redalert2-recomp order.
+
 ### Added
+- `NOTICE.md` (replaces `NOTICE`), `CONTRIBUTING.md`, `CONTRIBUTORS.md`,
+  `docs/building.md`, `docs/testing.md`, and a `setup.sh` that says there is
+  no Linux or macOS build yet.
 - `Setup.cmd` (`tools/setup.ps1`): one-click setup from your installed, 2.2-patched
   copy. Checks Python, `pefile`/`capstone`, pcrecomp (`pcrecomp-lithtech`) and
   Visual Studio, links the game as `game\`, rebases, catalogs, lifts, builds and
