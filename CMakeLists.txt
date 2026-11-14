@@ -20,26 +20,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(PCRECOMP "${CMAKE_SOURCE_DIR}/../pcrecomp" CACHE PATH "pcrecomp checkout")
-# pcrecomp-lithtech, the branch this needs, has no cmake/pcrecomp_gen.cmake
-# yet (pcrecomp-hostfixes does); without it the generated C is added here, the
-# same way: warnings off, /Od (-DPCRECOMP_GEN_OPT=ON for /O2).
-if(EXISTS ${PCRECOMP}/cmake/pcrecomp_gen.cmake)
-  include(${PCRECOMP}/cmake/pcrecomp_gen.cmake)
-else()
-  option(PCRECOMP_GEN_OPT "optimise the generated C (slow to compile)" OFF)
-  function(pcrecomp_gen_sources target)
-    file(GLOB_RECURSE srcs CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/recomp/gen/*.c")
-    if(NOT srcs)
-      message(FATAL_ERROR "src/recomp/gen is empty -- run `py -3 run_lift.py` first")
-    endif()
-    set(opts /w)
-    if(NOT PCRECOMP_GEN_OPT)
-      list(APPEND opts /Od)
-    endif()
-    target_sources(${target} PRIVATE ${srcs})
-    set_source_files_properties(${srcs} PROPERTIES COMPILE_OPTIONS "${opts}")
-  endfunction()
-endif()
+include(${PCRECOMP}/cmake/pcrecomp_gen.cmake)
 
 add_executable(shogo
   src/runtime/host.c

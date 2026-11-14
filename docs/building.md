@@ -8,9 +8,8 @@ rest of the details.
 `Setup.cmd` (`tools/setup.ps1`) checks for Python 3.10+, the `pefile` and
 `capstone` packages, the pcrecomp toolkit and Visual Studio 2022 with the C++
 x86 tools, and **asks** before installing any of them (`-Yes` installs without
-asking). The toolkit is `..\pcrecomp`, cloned on its **`pcrecomp-lithtech`**
-branch if missing (`PCRECOMP` points elsewhere); `main` lacks the DirectInput
-`HINSTANCE` shim, and setup refuses a checkout without it. It looks for Shogo
+asking). The toolkit is `..\pcrecomp`, cloned if missing (`PCRECOMP` points
+elsewhere); setup refuses a checkout without the DirectInput `HINSTANCE` shim. It looks for Shogo
 in the usual install folders or asks (`-GameDir DIR`), links it as `game\`,
 relocates the modules, catalogs, lifts and builds `build\shogo.exe`, and
 leaves a `Shogo` shortcut. A rerun skips finished steps; the details are in
@@ -23,12 +22,11 @@ There is no Linux or macOS build: `native32` is MSVC x86 inline assembly, and
 
 Prerequisites: Windows 10/11, **Python 3.10+** (`py -3 --version`), **git**,
 **Visual Studio 2022** (or its Build Tools) with *Desktop development with
-C++*, and pcrecomp cloned **beside** this repository as `pcrecomp`, on the
-`pcrecomp-lithtech` branch:
+C++*, and pcrecomp cloned **beside** this repository as `pcrecomp`:
 
 ```
 some-folder\
-  pcrecomp\        <- git clone -b pcrecomp-lithtech https://github.com/sp00nznet/pcrecomp
+  pcrecomp\        <- git clone https://github.com/sp00nznet/pcrecomp
   shogo\           <- this repository
 ```
 
@@ -68,8 +66,8 @@ some-folder\
 The usual trip-ups: `python` opening the Microsoft Store (Windows' alias
 placeholder; use `py -3`, or turn the alias off in *Settings > Apps > Advanced
 app settings > App execution aliases*); a freshly installed Python not on
-`PATH` until you open a new window; and a pcrecomp on `main` instead of
-`pcrecomp-lithtech` (DirectInput then fails and the engine quits at once).
+`PATH` until you open a new window; and a pcrecomp older than the
+DirectInput `HINSTANCE` shim (DirectInput then fails and the engine quits at once).
 
 ## The command line
 

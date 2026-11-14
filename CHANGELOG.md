@@ -6,6 +6,9 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+- Builds against pcrecomp main; the `pcrecomp-lithtech` branch is merged.
+  `CMakeLists.txt` uses main's `cmake/pcrecomp_gen.cmake` again.
+
 ### Fixed
 - The build configures against `pcrecomp-lithtech` again: the generated C was
   added through pcrecomp-hostfixes' `cmake/pcrecomp_gen.cmake`, which that

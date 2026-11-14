@@ -14,8 +14,6 @@
 - **Finish a farm build**: the first `netlab build shogo-recomp` stalled on the
   generated C at `/O2` under clang-cl; it is now compiled at `/Od`, so build
   it on the farm again and add a `QA` line.
-- **pcrecomp-lithtech into pcrecomp main**, then point Setup, the launcher and
-  the netlab recipe at `main`.
 
 ## Later
 - The Direct3D hardware path (only the RGB software rasterizer has run).

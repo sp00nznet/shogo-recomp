@@ -9,7 +9,7 @@ linked into one 32-bit host that calls the real DirectDraw, Direct3D,
 DirectInput and Miles. No emulator, no wrapper DLLs.
 
 Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain, on
-its **`pcrecomp-lithtech`** branch (not yet merged into `main`).
+its `main` branch.
 
 ![The main menu, drawn by the recompiled engine, game code and renderer](docs/screenshots/main-menu.png)
 
@@ -31,7 +31,7 @@ lifted C is made on your machine into the gitignored `src/recomp/gen/`.
 3. Play with the **`Shogo`** shortcut in that folder.
 
 The script asks before installing anything (Python, `pefile` and `capstone`,
-Visual Studio 2022's C++ tools), clones pcrecomp on `pcrecomp-lithtech`
+Visual Studio 2022's C++ tools), clones pcrecomp
 beside this folder if it isn't there, links your game as `game\`, and
 relocates, catalogs, lifts and builds every module, in about 15 minutes. A
 rerun skips finished steps; if it stops, it says why, and the details are in

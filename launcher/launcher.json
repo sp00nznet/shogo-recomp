@@ -9,7 +9,7 @@
     "name": "Shogo: Mobile Armor Division 2.2",
     "files": ["Client.exe", "SHOGOP3.REZ"]
   },
-  "sources": [{ "repo": "sp00nznet/pcrecomp", "ref": "pcrecomp-lithtech", "dir": "pcrecomp" }],
+  "sources": [{ "repo": "sp00nznet/pcrecomp", "ref": "main", "dir": "pcrecomp" }],
   "setup": {
     "windows": ["cmd", "/c", "Setup.cmd", "-Yes", "-GameDir", "{game}"]
   },

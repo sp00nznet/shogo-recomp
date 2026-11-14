@@ -46,7 +46,7 @@ lift (`de_msg.dll`, `ima.dll`) loads natively.
 `DirectInputCreateA` with the guest's `HINSTANCE` (`0x00400000`, a mapped
 image, not a module Windows loaded) fails with `E_INVALIDARG`, and the engine
 quits at once. KotOR and Messiah hit the same and fixed it in their hosts; it
-is now a native32 built-in (`pcrecomp-lithtech`).
+is now a native32 built-in.
 
 ## 4. Direct3D
 
